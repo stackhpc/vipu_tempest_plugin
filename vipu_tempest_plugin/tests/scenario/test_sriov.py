@@ -67,17 +67,16 @@ class TestSRIOV(manager.NetworkScenarioTest):
             ],
             key_name=keypair['name'],
             security_groups=security_groups)
-        return server
 
-    def _setup_network(self, server, keypair):
         public_network_id = CONF.network.public_network_id
-        floating_ip = self.create_floating_ip(server, public_network_id)
+        floating_ip = self.create_floating_ip(
+            server, public_network_id, port_id=mgmt_port['id'])
         # Verify that we can indeed connect to the server before we mess with
         # it's state
         self._wait_server_status_and_check_network_connectivity(
             server, keypair, floating_ip)
 
-        return floating_ip
+        return server, floating_ip
 
     def _check_network_connectivity(self, server, keypair, floating_ip,
                                     should_connect=True,
@@ -108,7 +107,6 @@ class TestSRIOV(manager.NetworkScenarioTest):
     @utils.services('compute', 'network')
     def test_server_connectivity(self):
         keypair = self.create_keypair()
-        server = self._setup_server(keypair)
-        floating_ip = self._setup_network(server, keypair)
+        server, floating_ip = self._setup_server(keypair)
         self._wait_server_status_and_check_network_connectivity(
             server, keypair, floating_ip)
