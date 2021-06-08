@@ -33,8 +33,8 @@ class TestSRIOV(manager.NetworkScenarioTest):
     @classmethod
     def skip_checks(cls):
         super(TestSRIOV, cls).skip_checks()
-        if not CONF.network.project_networks_reachable or \
-                CONF.network.public_network_id:
+        if not CONF.network.project_networks_reachable and \
+                not CONF.network.public_network_id:
             msg = ('Either project_networks_reachable must be "true", or '
                    'public_network_id must be defined.')
             raise cls.skipException(msg)
