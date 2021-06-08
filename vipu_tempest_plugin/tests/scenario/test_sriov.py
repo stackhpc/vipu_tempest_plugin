@@ -12,23 +12,29 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import testtools
-
 from tempest.common import utils
 from tempest.common import waiters
 from tempest import config
-from tempest.lib import decorators
 from tempest.scenario import manager
 
 CONF = config.CONF
 
 
 class TestSRIOV(manager.NetworkScenarioTest):
+    credentials = ['primary', 'admin']
+
+    @classmethod
+    def setup_clients(cls):
+        super(TestSRIOV, cls).setup_clients()
+        cls.networks_client = cls.os_admin.networks_client
+        cls.ports_client = cls.os_primary.ports_client
+        cls.servers_client = cls.os_primary.servers_client
+
     @classmethod
     def skip_checks(cls):
         super(TestSRIOV, cls).skip_checks()
-        if not (CONF.network.project_networks_reachable or
-                CONF.network.public_network_id):
+        if not CONF.network.project_networks_reachable or \
+                CONF.network.public_network_id:
             msg = ('Either project_networks_reachable must be "true", or '
                    'public_network_id must be defined.')
             raise cls.skipException(msg)
@@ -39,17 +45,26 @@ class TestSRIOV(manager.NetworkScenarioTest):
     def setup_credentials(cls):
         # Create no network resources for these tests.
         cls.set_network_resources()
-        super(TestNetworkAdvancedServerOps, cls).setup_credentials()
+        super(TestSRIOV, cls).setup_credentials()
 
     def _setup_server(self, keypair):
         security_groups = []
         if utils.is_extension_enabled('security-group', 'network'):
             security_group = self.create_security_group()
             security_groups = [{'name': security_group['name']}]
-        # TODO: port
-        network, _, _ = self.setup_network_subnet_with_router()
+        # TODO(johngarbutt) add config for networks
+        mgmt_uuid = "fa905f55-f4ba-494e-8b6b-9436b2c8cac0"
+        mgmt_port = self.create_port(mgmt_uuid)
+
+        rnic_uuid = "2163eae3-e3ed-47f0-b1f9-dc67b8a85eb9"
+        vnic_direct = {"binding:vnic_type": "direct"}
+        rnic_port = self.create_port(rnic_uuid, **vnic_direct)
+
         server = self.create_server(
-            networks=[{'uuid': network['id']}],
+            networks=[
+                {'port': mgmt_port['id']},
+                {'port': rnic_port['id']},
+            ],
             key_name=keypair['name'],
             security_groups=security_groups)
         return server
@@ -64,7 +79,6 @@ class TestSRIOV(manager.NetworkScenarioTest):
 
         return floating_ip
 
-    
     def _check_network_connectivity(self, server, keypair, floating_ip,
                                     should_connect=True,
                                     username=CONF.validation.image_ssh_user):
@@ -83,9 +97,9 @@ class TestSRIOV(manager.NetworkScenarioTest):
                                    server)
 
     def _wait_server_status_and_check_network_connectivity(
-        # inspired by tempest.scenario.test_network_advanced_server_ops
         self, server, keypair, floating_ip,
         username=CONF.validation.image_ssh_user):
+        # inspired by tempest.scenario.test_network_advanced_server_ops
         waiters.wait_for_server_status(self.servers_client, server['id'],
                                        'ACTIVE')
         self._check_network_connectivity(server, keypair, floating_ip,
