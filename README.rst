@@ -9,11 +9,3 @@ Please fill here a long description which must be at least 3 lines wrapped on
 Note that this is a hard requirement.
 
 * Free software: Apache license
-* Documentation: https://docs.openstack.org/vipu_tempest/latest
-* Source: https://opendev.org/stackhpc/vipu_tempest
-* Bugs: https://bugs.launchpad.net/replace with the name of the project on Launchpad or the ID from Storyboard
-
-Features
---------
-
-* TODO
