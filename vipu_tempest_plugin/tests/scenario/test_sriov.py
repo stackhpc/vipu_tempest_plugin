@@ -52,6 +52,21 @@ class TestSRIOV(manager.NetworkScenarioTest):
         if utils.is_extension_enabled('security-group', 'network'):
             security_group = self.create_security_group()
             security_groups = [{'name': security_group['name']}]
+            # Add a first rule to the created Security Group
+            ssh_rule = dict(
+                protocol='tcp',
+                port_range_min=22,
+                port_range_max=22,
+                direction='ingress',
+            )
+            self.create_security_group_rule(**ssh_rule)
+            # Add a second rule to the created Security Group
+            icmp_rule = dict(
+                protocol='icmp',
+                direction='ingress',
+            )
+            self.create_security_group_rule(**icmp_rule)
+
         # TODO(johngarbutt) add config for networks
         mgmt_uuid = "fa905f55-f4ba-494e-8b6b-9436b2c8cac0"
         mgmt_port = self.create_port(mgmt_uuid)
