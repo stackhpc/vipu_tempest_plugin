@@ -75,7 +75,9 @@ class TestSRIOV(manager.NetworkScenarioTest):
         vnic_direct = {"binding:vnic_type": "direct"}
         rnic_port = self.create_port(rnic_uuid, **vnic_direct)
 
+        image_uuid = "2892acc6-b09a-411a-afd1-5233edbe5524"
         server = self.create_server(
+            image_id=image_uuid,
             networks=[
                 {'port': mgmt_port['id']},
                 {'port': rnic_port['id']},
