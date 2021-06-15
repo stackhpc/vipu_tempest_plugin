@@ -67,15 +67,14 @@ class TestSRIOV(manager.NetworkScenarioTest):
             )
             self.create_security_group_rule(**icmp_rule)
 
-        # TODO(johngarbutt) add config for networks
-        mgmt_uuid = "fa905f55-f4ba-494e-8b6b-9436b2c8cac0"
+        mgmt_uuid = CONF.testsriov.mgmt_port_uuid
         mgmt_port = self.create_port(mgmt_uuid)
 
-        rnic_uuid = "2163eae3-e3ed-47f0-b1f9-dc67b8a85eb9"
+        rnic_uuid = CONF.testsriov.rnic_port_uuid
         vnic_direct = {"binding:vnic_type": "direct"}
         rnic_port = self.create_port(rnic_uuid, **vnic_direct)
 
-        image_uuid = "2892acc6-b09a-411a-afd1-5233edbe5524"
+        image_uuid = CONF.testsriov.custom_image_uuid
         server = self.create_server(
             image_id=image_uuid,
             networks=[
@@ -97,7 +96,7 @@ class TestSRIOV(manager.NetworkScenarioTest):
 
     def _check_network_connectivity(self, server, keypair, floating_ip,
                                     should_connect=True,
-                                    username=CONF.validation.image_ssh_user):
+                                    username=CONF.testsriov.custom_image_ssh_user):
         # inspired by tempest.scenario.test_network_advanced_server_ops
         private_key = keypair['private_key']
         self.check_tenant_network_connectivity(
@@ -114,7 +113,7 @@ class TestSRIOV(manager.NetworkScenarioTest):
 
     def _wait_server_status_and_check_network_connectivity(
         self, server, keypair, floating_ip,
-        username=CONF.validation.image_ssh_user):
+        username=CONF.testsriov.custom_image_ssh_user):
         # inspired by tempest.scenario.test_network_advanced_server_ops
         waiters.wait_for_server_status(self.servers_client, server['id'],
                                        'ACTIVE')

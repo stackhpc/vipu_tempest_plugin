@@ -16,7 +16,9 @@
 
 import os
 
+from tempest import config
 from tempest.test_discover import plugins
+from vipu_tempest_plugin import config as test_sriov_config
 
 
 class VIPUTempestPlugin(plugins.TempestPlugin):
@@ -28,7 +30,12 @@ class VIPUTempestPlugin(plugins.TempestPlugin):
         return full_test_dir, base_path
 
     def register_opts(self, conf):
-        pass
-
+        config.register_opt_group(conf, test_sriov_config.test_sriov_group,
+                                  test_sriov_config.TestSriovGroup)
+                            
     def get_opt_lists(self):
-        pass
+        return [
+            (test_sriov_config.test_sriov_group.name,
+             test_sriov_config.TestSriovGroup),
+
+        ]
