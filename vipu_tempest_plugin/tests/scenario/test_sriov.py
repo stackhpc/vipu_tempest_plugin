@@ -119,6 +119,13 @@ class TestSRIOV(manager.NetworkScenarioTest):
                                        'ACTIVE')
         self._check_network_connectivity(server, keypair, floating_ip,
                                          username=username)
+        private_key = keypair['private_key']
+        ssh_client = self.get_remote_client(floating_ip,
+                                            private_key=private_key,
+                                            server=server,
+                                            username=username)
+        command = "gc-reset"
+        ssh_client.exec_command(command)
 
     @utils.services('compute', 'network')
     def test_server_connectivity(self):
