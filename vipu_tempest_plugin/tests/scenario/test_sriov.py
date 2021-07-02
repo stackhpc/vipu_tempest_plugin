@@ -119,7 +119,8 @@ class TestSRIOV(manager.NetworkScenarioTest):
                                             private_key=private_key,
                                             server=server,
                                             username=username)
-        command = "source /opt/gc/poplar_sdk-ubuntu_18_04-2.0.0+481-79b41f85d1/poplar-ubuntu_18_04-2.0.0+108156-165bbd8a64/enable.sh && gc-info -l && gc-reset"
+        # TODO: config for script name?
+        command = "bash gc-test.sh"
         gc_output = ssh_client.exec_command(command)
         LOG.debug("Tested vipu stack: %s" % gc_output)
 
