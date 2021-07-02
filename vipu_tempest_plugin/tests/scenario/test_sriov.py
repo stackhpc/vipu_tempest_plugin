@@ -115,7 +115,7 @@ class TestSRIOV(manager.NetworkScenarioTest):
                                             private_key=private_key,
                                             server=server,
                                             username=username)
-        command = "source /opt/gc/poplar_sdk-ubuntu_18_04-2.0.0+481-79b41f85d1/poplar-ubuntu_18_04-2.0.0+108156-165bbd8a64/enable.sh && gc-reset"
+        command = "source /opt/gc/poplar_sdk-ubuntu_18_04-2.0.0+481-79b41f85d1/poplar-ubuntu_18_04-2.0.0+108156-165bbd8a64/enable.sh && gc-info -l && gc-reset"
         ssh_client.exec_command(command)
 
     def _wait_server_status_and_check_network_connectivity(
