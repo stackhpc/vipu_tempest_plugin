@@ -12,12 +12,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from oslo_log import log as logging
+
 from tempest.common import utils
 from tempest.common import waiters
 from tempest import config
 from tempest.scenario import manager
 
 CONF = config.CONF
+
+LOG = logging.getLogger(__name__)
 
 
 class TestSRIOV(manager.NetworkScenarioTest):
@@ -110,6 +114,15 @@ class TestSRIOV(manager.NetworkScenarioTest):
                                    private_key, should_connect,
                                    'Public network connectivity check failed',
                                    server)
+
+        ssh_client = self.get_remote_client(floating_ip_addr,
+                                            private_key=private_key,
+                                            server=server,
+                                            username=username)
+        # TODO: config for script name?
+        command = "bash gc-test.sh"
+        gc_output = ssh_client.exec_command(command)
+        LOG.debug("Tested vipu stack: %s" % gc_output)
 
     def _wait_server_status_and_check_network_connectivity(
         self, server, keypair, floating_ip,
