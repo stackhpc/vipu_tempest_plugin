@@ -12,12 +12,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from oslo_log import log as logging
+
 from tempest.common import utils
 from tempest.common import waiters
 from tempest import config
 from tempest.scenario import manager
 
 CONF = config.CONF
+
+LOG = logging.getLogger(__name__)
 
 
 class TestSRIOV(manager.NetworkScenarioTest):
@@ -116,7 +120,8 @@ class TestSRIOV(manager.NetworkScenarioTest):
                                             server=server,
                                             username=username)
         command = "source /opt/gc/poplar_sdk-ubuntu_18_04-2.0.0+481-79b41f85d1/poplar-ubuntu_18_04-2.0.0+108156-165bbd8a64/enable.sh && gc-info -l && gc-reset"
-        ssh_client.exec_command(command)
+        gc_output = ssh_client.exec_command(command)
+        LOG.debug("Tested vipu stack: %s" % gc_output)
 
     def _wait_server_status_and_check_network_connectivity(
         self, server, keypair, floating_ip,
